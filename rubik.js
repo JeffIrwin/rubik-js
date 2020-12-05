@@ -707,3 +707,5 @@ function initRubikGame()
 	document.getElementById(RUBIK_BODY).innerHTML = state2string(stateg);
 }
 
+module.exports = parse;
+
