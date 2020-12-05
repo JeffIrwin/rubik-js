@@ -3,15 +3,23 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>Jeff Irwin&apos;s GitHub page</title>
+	<title>Rubik's cube</title>
+	<script src="rubik.js" defer></script>
 </head>
 
-<body>
+<body onload="initRubikGame()">
 
-	<h1>Hello world</h1>
+	<h1>Rubik's cube</h1>
 
-	<div id="text"></div>
-	<script src="index.js"></script>
+	<pre> <p id="rubikBody"></p> </pre>
+
+	<!-- onsubmit=... stops the whole page from reloading on form submission -->
+	<form name="rubikForm" onsubmit="return false">
+		<p>
+			Rubik command:
+			<input name="command" type="text" onChange="processRubikCommand()">
+		</p>
+	</form>
 
 </body>
 
