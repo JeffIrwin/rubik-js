@@ -3,12 +3,9 @@
 const parse = require("./rubik.js");
 
 // Use toBe() to compare primitives.  Use toStrictEqual() to compare array elements.
-test("parse(R L')", () =>
-		{
-			//expect(sum1(1, 2)).toBe(3);
-			expect(parse("R L'")).toStrictEqual([0,3,2,1]);
-		}
-	);
+let moves0 = "R L'";
+let imoves0 = [0,3,2,1];
+test("parse(" + moves0 + ")", () => {expect(parse(moves0)).toStrictEqual(imoves0);});
 
 // Note the moves1 string ends with a face ID, not "'", "2", or whitespace
 let moves1 = "R L U D' F' B' x y' z2 S E2 M' b f2 d' u' l2 r";
