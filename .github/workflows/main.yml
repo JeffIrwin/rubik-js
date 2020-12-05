@@ -14,6 +14,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name: npm install jest
+      run: |
+        npm install --save-dev jest
     - name: npm run test
       run: |
         npm run test
