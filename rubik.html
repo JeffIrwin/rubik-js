@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+
+<head>
+	<meta charset="utf-8">
+	<title>Rubik's cube</title>
+	<script src="rubik.js" defer></script>
+</head>
+
+<body onload="initRubikGame()">
+
+	<h1>Rubik's cube</h1>
+
+	<pre> <p id="rubikBody"></p> </pre>
+
+	<!-- onsubmit=... stops the whole page from reloading on form submission -->
+	<form name="rubikForm" onsubmit="return false">
+		<p>
+			Rubik command:
+			<input name="command" type="text" onChange="processRubikCommand()">
+		</p>
+	</form>
+
+	<!--
+	<script src="rubik.js"></script>
+	-->
+
+</body>
+
+</html>
+

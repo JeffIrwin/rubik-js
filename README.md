@@ -1,2 +1,4 @@
+
 # rubik-js
-  Rubik's cube game written in JavaScript
+Rubik's cube game written in JavaScript
+
