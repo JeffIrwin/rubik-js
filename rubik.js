@@ -97,12 +97,15 @@ const
 
 const
 	CHAR_CCW = "'",
-	CHAR_2 = "2"
+	CHAR_2 = "2",
+	CHAR_CCW_ALT = "’"  // iOS ’ character
 	;
 
+// Put the alternative character(s) first so they aren't used in the inverse map
 const TURN_MAP = new Map([
-		[CHAR_CCW, TURN_CCW],
-		[CHAR_2  , TURN_2]
+		[CHAR_CCW_ALT, TURN_CCW],
+		[CHAR_CCW    , TURN_CCW],
+		[CHAR_2      , TURN_2]
 		]);
 
 const TURN_MAP_INV = new Map(Array.from(TURN_MAP, a => a.reverse()));
@@ -201,8 +204,14 @@ function parse(moves)
 		i++;
 		if (!moveParsed)
 		{
-			// TODO:  catch
-			continue;
+			if (c.trim() === "")
+				continue;
+			else
+			{
+				// TODO:  user feedback, return []
+				console.log('Error: non-whitespace character "' + c + '"');
+				continue;
+			}
 		}
 		imoves.push(MOVE_MAP.get(c));
 
@@ -219,8 +228,13 @@ function parse(moves)
 		}
 		else
 		{
-			// TODO:  catch anything besides whitespace or EOL
-			imoves.push(TURN_CW);
+			if (c.trim() === "")
+				imoves.push(TURN_CW);
+			else
+			{
+				// TODO:  ibid
+				console.log('Error: non-whitespace character "' + c + '"');
+			}
 		}
 	}
 	console.log("imoves = " + imoves);
