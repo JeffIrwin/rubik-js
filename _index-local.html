@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+
+<!-- Named "_*.html" to be ignored by jekyll -->
+
+<head>
+	<meta charset="utf-8">
+	<title>Rubik's cube</title>
+</head>
+
+<body >
+
+	<h1>Rubik's cube</h1>
+
+	<pre><p id="rubikBody"></p></pre>
+
+	<!-- onsubmit=... stops the whole page from reloading on form submission -->
+	<form name="rubikForm" onsubmit="return false">
+		<p>
+			Rubik command:
+			<input name="command" type="text" onChange="processRubikCommand()">
+		</p>
+	</form>
+
+	<script src="rubik.js" onload="initRubikGame()"></script>
+
+</body>
+
+</html>
+

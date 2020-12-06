@@ -208,9 +208,10 @@ function parse(moves)
 				continue;
 			else
 			{
-				// TODO:  user feedback, return []
-				console.log('Error: non-whitespace character "' + c + '"');
-				continue;
+				throw ' '.repeat(i-1)
+					+ '^\nError 0: unexpected non-whitespace character "' + c
+					+ '" at column ' + i;
+				return [];
 			}
 		}
 		imoves.push(MOVE_MAP.get(c));
@@ -232,8 +233,10 @@ function parse(moves)
 				imoves.push(TURN_CW);
 			else
 			{
-				// TODO:  ibid
-				console.log('Error: non-whitespace character "' + c + '"');
+				throw ' '.repeat(i-1)
+					+ '^\nError 1: unexpected non-whitespace character "' + c
+					+ '" at column ' + i;
+				return [];
 			}
 		}
 	}
@@ -692,7 +695,18 @@ function processRubikCommand()
 
 	//console.log("stateg = " + stateg);
 
-	apply(command, stateg);
+	let caught = false;
+	let errstr = "";
+	try
+	{
+		apply(command, stateg);
+	}
+	catch (e)
+	{
+		caught = true;
+		errstr = e;
+		console.log("caught: " + errstr);
+	}
 
 	// toString() is a hack to compare array values instead of pointers
 	let solved = (orient(stateg).toString() == initState().toString());
@@ -708,6 +722,11 @@ function processRubikCommand()
 	let n = commandHistory.length;
 	for (let i = Math.max(0, n - nshow); i < n; i++)
 		body += commandHistory[i] + "\n";
+
+	if (caught)
+	{
+		body += errstr;
+	}
 
 	if (solved) body += "Successfully solved!\n";
 
