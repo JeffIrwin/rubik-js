@@ -210,7 +210,7 @@ function parse(moves)
 			{
 				throw ' '.repeat(i-1)
 					+ '^\nError 0: unexpected non-whitespace character "' + c
-					+ '" at column ' + i;
+					+ '" at column ' + i + ', character code ' + c.charCodeAt(0);
 				return [];
 			}
 		}
@@ -235,7 +235,7 @@ function parse(moves)
 			{
 				throw ' '.repeat(i-1)
 					+ '^\nError 1: unexpected non-whitespace character "' + c
-					+ '" at column ' + i;
+					+ '" at column ' + i + ', character code ' + c.charCodeAt(0);
 				return [];
 			}
 		}
