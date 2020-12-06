@@ -1,3 +1,8 @@
 
+# My stuff
+scratch/
+
+# JavaScript stuff
 node_modules/
+package-lock.json
 

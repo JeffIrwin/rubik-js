@@ -707,5 +707,11 @@ function initRubikGame()
 	document.getElementById(RUBIK_BODY).innerHTML = state2string(stateg);
 }
 
-module.exports = parse;
+//==============================================================================
+
+if (typeof module !== "undefined")
+{
+	// Export functions for jest testing script, but not in production
+	module.exports = parse;
+}
 
