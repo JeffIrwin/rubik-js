@@ -98,14 +98,16 @@ const
 const
 	CHAR_CCW = "'",
 	CHAR_2 = "2",
-	CHAR_CCW_ALT = "’"  // iOS ’ character
+	CHAR_CCW_ALT0 = "’",  // iOS ’ character(s)
+	CHAR_CCW_ALT1 = String.fromCharCode(8217); 
 	;
 
 // Put the alternative character(s) first so they aren't used in the inverse map
 const TURN_MAP = new Map([
-		[CHAR_CCW_ALT, TURN_CCW],
-		[CHAR_CCW    , TURN_CCW],
-		[CHAR_2      , TURN_2]
+		[CHAR_CCW_ALT0, TURN_CCW],
+		[CHAR_CCW_ALT1, TURN_CCW],
+		[CHAR_CCW     , TURN_CCW],
+		[CHAR_2       , TURN_2]
 		]);
 
 const TURN_MAP_INV = new Map(Array.from(TURN_MAP, a => a.reverse()));
