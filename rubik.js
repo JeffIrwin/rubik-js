@@ -90,9 +90,22 @@ const MOVE_MAP_INV = new Map(Array.from(MOVE_MAP, a => a.reverse()));
 // Twist amount IDs.  CW 90 degrees is default, otherwise CCW 90, or half turn
 // (180 degrees).
 const
+	TURN_CCW = 1,
+	TURN_2 = 2,
+	TURN_CW = 3
+	;
+
+const
 	CHAR_CCW = "'",
 	CHAR_2 = "2"
 	;
+
+const TURN_MAP = new Map([
+		[CHAR_CCW, TURN_CCW],
+		[CHAR_2  , TURN_2]
+		]);
+
+const TURN_MAP_INV = new Map(Array.from(TURN_MAP, a => a.reverse()));
 
 // Map from face-major state ordering to an ordering for flat 2D text display
 const FLAT_MAP =
@@ -198,18 +211,17 @@ function parse(moves)
 		c = i < moves.length ? moves[i] : " ";
 		//console.log("c = " + c);
 
-		if (c == CHAR_CCW)
-			imoves.push(1);
-		else if (c == CHAR_2)
-			imoves.push(2);
+		let turnParsed = TURN_MAP.has(c);
+		i++;
+		if (turnParsed)
+		{
+			imoves.push(TURN_MAP.get(c));
+		}
 		else
 		{
-			// Default 90 degrees CW
-			imoves.push(3);
-
 			// TODO:  catch anything besides whitespace or EOL
+			imoves.push(TURN_CW);
 		}
-		i++;
 	}
 	console.log("imoves = " + imoves);
 
@@ -227,16 +239,10 @@ function render(imoves)
 	{
 		moves += MOVE_MAP_INV.get(imoves[i]);
 
-		// TODO:  map and invert, consolidate with parse()
-		let turns = imoves[i+1];
-		if (turns == 1)
-			moves += CHAR_CCW;
-		else if (turns == 2)
-			moves += CHAR_2;
-		else
-		{
-			// TODO:  catch
-		}
+		let turnParsed = TURN_MAP_INV.has(imoves[i+1]);
+		if (turnParsed)
+			moves += TURN_MAP_INV.get(imoves[i+1]);
+
 		moves += " ";
 	}
 
