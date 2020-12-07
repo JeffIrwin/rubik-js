@@ -13,3 +13,5 @@
 
 <script src="rubik.js" onload="initRubikGame()"></script>
 
+<p><a href="https://jeffirwin.github.io/rubik-js/about" title="Command help link" target="_blank">Command help</a></p>
+
