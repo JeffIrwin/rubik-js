@@ -1,7 +1,8 @@
 "use strict";
 
-// HTML body ID for text display output
+// HTML body IDs for text display output
 const RUBIK_BODY = "rubikBody";
+const COMMAND_BODY = "commandHistoryBody";
 
 // Number of tiles along a 1D line
 const NTILESLINE = 3;
@@ -718,21 +719,23 @@ function processRubikCommand()
 	commandHistory.push(command);
 
 	let body = state2string(stateg) + "\n\n";
+	document.getElementById(RUBIK_BODY).innerHTML = body;
 
 	// Show at most nshow commands
 	let nshow = 10;
 	let n = commandHistory.length;
+	let cbody = "";
 	for (let i = Math.max(0, n - nshow); i < n; i++)
-		body += commandHistory[i] + "\n";
+		cbody += commandHistory[i] + "\n";
 
 	if (caught)
 	{
-		body += errstr;
+		cbody += errstr;
 	}
 
-	if (solved) body += "Successfully solved!\n";
+	if (solved) cbody += "Successfully solved!\n";
 
-	document.getElementById(RUBIK_BODY).innerHTML = body;
+	document.getElementById(COMMAND_BODY).innerHTML = cbody;
 
 	// Reset text input
 	document.forms.rubikForm.command.value = "";

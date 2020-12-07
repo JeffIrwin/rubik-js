@@ -3,6 +3,8 @@
 
 <pre><p id="rubikBody"></p></pre>
 
+<pre><p id="commandHistoryBody"></p></pre>
+
 <!-- onsubmit=... stops the whole page from reloading on form submission -->
 <form name="rubikForm" onsubmit="return false">
 	<p>
