@@ -1,8 +1,7 @@
 
 # Help
 
-<details>
-<summary>Command help</summary>
+## Command help
 
 Clockwise face turns (`R`ight, `U`p, `L`eft, `D`own, `F`ront, and `B`ack):
 - `R`
@@ -27,8 +26,7 @@ Whole cube rotations:
 - `z`
 - `x` rotates in the `R` face direction, `y` in `U`, and `z` in `F`
 
-<details>
-  <summary>More help</summary>
+## More help
 
 Middle-layer slice turns:
 - `M` in `L` direction
@@ -38,13 +36,13 @@ Middle-layer slice turns:
 Two-layer turns:
 - `r`, `u`, `l`, `d`, `f`, `b`
 
-## Rubik's algorithms
+### Rubik's algorithms
 This CLI game is almost impossible to play without a physical cube in front of you to aid in muscle memory.  For help, here are some algorithms that can be copy-pasted into gameplay.
 
-### First layer
+#### First layer
 If you don't know these algorithms, you're gonna have a bad time.
 
-### Middle layer
+#### Middle layer
 Middle layer step, moving an edge piece from the top to the middle:
 
 Upper-left to front-right:
@@ -55,7 +53,7 @@ Upper-right to front-left:
 
     L' U L U F U' F' 
 
-### Top layer
+#### Top layer
 Top step, top edge orientation:
 
     F R U R' U' R U R' U' F' 
@@ -71,8 +69,4 @@ Top step, top corner permutation:
 Top step, top corner orientation:
 
     R' D' R D 
-
-</details>
-
-</details>
 
