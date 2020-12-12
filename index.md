@@ -9,11 +9,13 @@
 <form name="rubikForm" onsubmit="return false">
 	<p>
 		Rubik command:
-		<input name="command" type="text" onChange="processRubikCommand()">
+		<input name="command" type="text">
 	</p>
 </form>
 
-<script src="rubik.js" onload="initRubikGame()"></script>
-
 <p><a href="https://jeffirwin.github.io/rubik-js/about" title="Command help link" target="_blank">Command help</a></p>
+
+<div id="rubikDiv"></div>
+
+<script src="./dist/rubik.js"></script>
 

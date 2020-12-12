@@ -1,5 +1,7 @@
 "use strict";
 
+import rubikVtk from 'rubikVtk';
+
 // HTML body IDs for text display output
 const RUBIK_BODY = "rubikBody";
 const COMMAND_BODY = "commandHistoryBody";
@@ -168,6 +170,9 @@ function state2string(state)
 
 	}
 	//string += "]";
+
+	// TODO:  move this outside of string conversion function; unrelated
+	rubikVtk.setRubikVtkColors(state, cmap, FLAT_MAP);
 
 	return string;
 }
@@ -730,7 +735,7 @@ function processRubikCommand()
 
 	if (caught)
 	{
-		cbody += errstr;
+		cbody += errstr + "\n";
 	}
 
 	if (solved) cbody += "Successfully solved!\n";
@@ -749,13 +754,23 @@ function initRubikGame()
 	scramble(stateg);
 
 	document.getElementById(RUBIK_BODY).innerHTML = state2string(stateg);
+	document.forms.rubikForm.command.addEventListener("change", processRubikCommand);
 }
 
 //==============================================================================
 
-if (typeof module !== "undefined")
+//if (typeof module !== "undefined")
+//{
+//	// Export functions for jest testing script, but not in production
+//	module.exports = parse;
+//}
+
+export default
 {
-	// Export functions for jest testing script, but not in production
-	module.exports = parse;
-}
+	initRubikGame,
+	processRubikCommand,
+	parse
+};
+
+initRubikGame();
 

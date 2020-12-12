@@ -1,6 +1,8 @@
 "use strict";
 
-const parse = require("./rubik.js");
+//const parse = require("./rubik.js");
+//const parse = require("./dist/rubik.js");
+import rubik from 'rubik';
 
 // TODO:  refactor these with a loop over all parse tests
 

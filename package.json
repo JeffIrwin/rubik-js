@@ -1,8 +1,14 @@
 {
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "webpack --progress --mode development",
+    "build:release": "webpack --progress --mode production"
   },
   "devDependencies": {
-    "jest": "^26.6.3"
+    "jest": "^26.6.3",
+    "kw-web-suite": "^11.0.0"
+  },
+  "dependencies": {
+    "vtk.js": "^15.3.3"
   }
 }
