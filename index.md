@@ -8,10 +8,9 @@
 	<p>
 		Rubik command:
 		<input name="command" type="text">
+		<a href="https://jeffirwin.github.io/rubik-js/about" title="Command help link" target="_blank">Help</a>
 	</p>
 </form>
-
-<p><a href="https://jeffirwin.github.io/rubik-js/about" title="Command help link" target="_blank">Command help</a></p>
 
 <div id="rubikDiv"></div>
 
