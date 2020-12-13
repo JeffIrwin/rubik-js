@@ -192,7 +192,7 @@ function initRubikVtk()
 	const cube = vtkAnnotatedCubeActor.newInstance();
 	cube.setDefaultStyle
 	({
-		text: 'Right',
+		text: 'R',
 		//fontStyle: 'bold',
 		fontFamily: 'Arial',
 		fontColor: 'black',
