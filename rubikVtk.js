@@ -7,12 +7,8 @@ import vtkRenderWindow from 'vtk.js/Sources/Rendering/Core/RenderWindow';
 import vtkRenderWindowInteractor from 'vtk.js/Sources/Rendering/Core/RenderWindowInteractor';
 import vtkRenderer from 'vtk.js/Sources/Rendering/Core/Renderer';
 import vtkInteractorStyleTrackballCamera from 'vtk.js/Sources/Interaction/Style/InteractorStyleTrackballCamera';
-
-//import vtkAxesActor from 'vtk.js/Sources/Rendering/Core/AxesActor';
-//import vtkTransform from 'vtk.js/Sources/Common/Transform';
-
-//import vtkLabelWidget from 'vtk.js/Sources/Interaction/Widgets/LabelWidget';
-//import TextAlign from 'vtk.js/Sources/Interaction/Widgets/LabelRepresentation/Constants';
+import vtkOrientationMarkerWidget from 'vtk.js/Sources/Interaction/Widgets/OrientationMarkerWidget';
+import vtkAnnotatedCubeActor from 'vtk.js/Sources/Rendering/Core/AnnotatedCubeActor';
 
 // Tile width
 const D = 1.0;
@@ -192,20 +188,26 @@ function initRubikVtk()
 		renderer.addActor(actors[i]);
 	}
 
-	//// For axes that are properly translated with independent rotations, see:
-	////
-	////     https://kitware.github.io/vtk-js/examples/InteractiveOrientationWidget.html
-	////
-	//// Or, better yet:
-	////
-	////     https://kitware.github.io/vtk-js/examples/OrientationMarkerWidget.html
-	////
-	//
-	//let axes = vtkAxesActor.newInstance();
-	////let transform = vtkLandmarkTransform.newInstance();
-	////transform.Translate(1.0, 0.0, 0.0);
-	////axes.setUserTransform(transform);
-	//renderer.addActor(axes);
+	// setup orientation widget
+	const cube = vtkAnnotatedCubeActor.newInstance();
+	cube.setDefaultStyle
+	({
+		text: 'Right',
+		//fontStyle: 'bold',
+		fontFamily: 'Arial',
+		fontColor: 'black',
+		fontSizeScale: (res) => res / 2,
+		faceColor: '#eeeeee',
+		faceRotation: 0,
+		edgeThickness: 0.1,
+		edgeColor: 'cyan',
+		resolution: 400,
+	});
+	cube.setXMinusFaceProperty({text: 'Left' });
+	cube.setYPlusFaceProperty ({text: 'Up'   });
+	cube.setYMinusFaceProperty({text: 'Down' });
+	cube.setZPlusFaceProperty ({text: 'Front'});
+	cube.setZMinusFaceProperty({text: 'Back' });
 
 	renderer.resetCamera();
 
@@ -231,12 +233,18 @@ function initRubikVtk()
 	// Setup interactor style to use
 	interactor.setInteractorStyle(vtkInteractorStyleTrackballCamera.newInstance());
 
-	//const widget2 = vtkLabelWidget.newInstance();
-	//widget2.setInteractor(renderWindow.getInteractor());
-	//widget2.setEnabled(1);
-	//widget2.getWidgetRep().setLabelText("Front");
-	////widget2.getWidgetRep().setWorldPosition([X1, Y1, Z3]);
-	//widget2.getWidgetRep().setDisplayPosition([X1, Y1, Z3]);
+	// create orientation widget
+	const orientationWidget = vtkOrientationMarkerWidget.newInstance({
+	  actor: cube,
+	  interactor: renderWindow.getInteractor(),
+	});
+	orientationWidget.setEnabled(true);
+	orientationWidget.setViewportCorner(
+	  vtkOrientationMarkerWidget.Corners.BOTTOM_RIGHT
+	);
+	orientationWidget.setViewportSize(0.15);
+	orientationWidget.setMinPixelSize(100);
+	orientationWidget.setMaxPixelSize(300);
 
 }
 
