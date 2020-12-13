@@ -14,6 +14,9 @@
 
 <div id="rubikDiv"></div>
 
+<input type="button" id="Scramble"   value="Scramble">
+<input type="button" id="Unscramble" value="Unscramble">
+
 <pre><p id="rubikBody"></p></pre>
 
 <script src="./dist/rubik.js"></script>

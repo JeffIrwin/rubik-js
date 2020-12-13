@@ -2,9 +2,11 @@
 
 import rubikVtk from 'rubikVtk';
 
-// HTML body IDs for text display output
+// HTML IDs for text display output, button listeners, etc.
 const RUBIK_BODY = "rubikBody";
 const COMMAND_BODY = "commandHistoryBody";
+const SCRAMBLE = "Scramble";
+const UNSCRAMBLE = "Unscramble";
 
 // Number of tiles along a 1D line
 const NTILESLINE = 3;
@@ -131,15 +133,17 @@ const FLAT_MAP =
 	             51, 52, 53
 ];
 
+// Colormap
+const CMAP = "wrbogy";
+
 let stateg;
 let commandHistory = [];
+let moveHistory = [];
 
-function state2string(state)
+function state2string(state, cmap)
 {
 	// Convert the cube state to a flat 2D string display, arranged like in the
 	// FLAT_MAP above
-
-	let cmap = "wrbogy";
 
 	let string = "";  // "[";
 	for (let i = 0; i < NTILES; i++)
@@ -170,9 +174,6 @@ function state2string(state)
 
 	}
 	//string += "]";
-
-	// TODO:  move this outside of string conversion function; unrelated
-	rubikVtk.setRubikVtkColors(state, cmap, FLAT_MAP);
 
 	return string;
 }
@@ -642,8 +643,20 @@ function scramble(state)
 	applyExpandedMoves(imoves, state);
 
 	let moves = render(imoves);
+	moveHistory.push(moves);
+
 	console.log("scramble = " + moves);
 	console.log("reverse scramble = " + undo(moves));
+}
+
+function unscramble(state)
+{
+	// Undo full history of moves, including user moves and random scrambles
+	for (let i = moveHistory.length - 1; i >= 0; i--)
+	{
+		let moves = moveHistory.pop();
+		apply(undo(moves), state);
+	}
 }
 
 function orient(state0)
@@ -689,6 +702,13 @@ function orient(state0)
 	return state;
 }
 
+function renderRubik()
+{
+	// Render the cube in the VTK render window and as text
+	rubikVtk.setRubikVtkColors(stateg, CMAP, FLAT_MAP);
+	document.getElementById(RUBIK_BODY).innerHTML = state2string(stateg, CMAP);
+}
+
 function processRubikCommand()
 {
 	console.log("starting processRubikCommand()");
@@ -718,9 +738,7 @@ function processRubikCommand()
 	//console.log("stateg = " + orient(stateg).toString());
 
 	commandHistory.push(command);
-
-	let body = state2string(stateg) + "\n\n";
-	document.getElementById(RUBIK_BODY).innerHTML = body;
+	renderRubik();
 
 	// Show at most nshow commands
 	let nshow = 10;
@@ -733,7 +751,14 @@ function processRubikCommand()
 	{
 		cbody += errstr + "\n";
 	}
+	else
+	{
+		// Only save valid moves for unscrambling
+		moveHistory.push(command);
+	}
 
+	// TODO:  move the solution indicator somewhere else.  After clicking
+	// "Scramble", this isn't right.
 	if (solved) cbody += "Successfully solved!\n";
 
 	document.getElementById(COMMAND_BODY).innerHTML = cbody;
@@ -742,15 +767,30 @@ function processRubikCommand()
 	document.forms.rubikForm.command.value = "";
 }
 
+function processScramble()
+{
+	console.log("starting processScramble()");
+	scramble(stateg);
+	renderRubik();
+}
+
+function processUnscramble()
+{
+	console.log("starting processUnscramble()");
+	unscramble(stateg);
+	renderRubik();
+}
+
 function initRubikGame()
 {
 	console.log("starting initRubikGame()");
 
 	stateg = initState();
-	scramble(stateg);
+	processScramble();
 
-	document.getElementById(RUBIK_BODY).innerHTML = state2string(stateg);
-	document.forms.rubikForm.command.addEventListener("change", processRubikCommand);
+	document.forms.rubikForm.command.addEventListener("change", processRubikCommand)
+	document.getElementById(SCRAMBLE).addEventListener("click", processScramble);
+	document.getElementById(UNSCRAMBLE).addEventListener("click", processUnscramble);
 }
 
 //==============================================================================
