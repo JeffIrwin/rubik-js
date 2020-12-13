@@ -1,6 +1,4 @@
 
-# Rubik's cube
-
 <pre><p id="commandHistoryBody"></p></pre>
 
 <!-- onsubmit=... stops the whole page from reloading on form submission -->
@@ -8,7 +6,7 @@
 	<p>
 		Rubik command:
 		<input name="command" type="text">
-		<a href="https://jeffirwin.github.io/rubik-js/about" title="Command help link" target="_blank">Help</a>
+		<a href="https://jeffirwin.github.io/rubik-js/about" title="Command help link" target="_blank">help</a>
 	</p>
 </form>
 

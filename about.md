@@ -37,7 +37,7 @@ Two-layer turns:
 - `r`, `u`, `l`, `d`, `f`, `b`
 
 ### Rubik's algorithms
-This CLI game is almost impossible to play without a physical cube in front of you to aid in muscle memory.  For help, here are some algorithms that can be copy-pasted into gameplay.
+This game is almost impossible to play without a physical cube in front of you to aid in muscle memory.  For help, here are some algorithms that can be copy-pasted into gameplay.
 
 #### First layer
 If you don't know these algorithms, you're gonna have a bad time.  [Maybe start here.](https://www.rubiks.com/en-us/how-to-solve-rubiks-cube)
