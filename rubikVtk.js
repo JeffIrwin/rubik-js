@@ -201,7 +201,7 @@ function initRubikVtk()
 		faceRotation: 0,
 		edgeThickness: 0.1,
 		edgeColor: 'cyan',
-		resolution: 400,
+		resolution: 400
 	});
 	cube.setXMinusFaceProperty({text: 'L'});
 	cube.setYPlusFaceProperty ({text: 'U'});
@@ -236,12 +236,11 @@ function initRubikVtk()
 	// create orientation widget
 	const orientationWidget = vtkOrientationMarkerWidget.newInstance({
 	  actor: cube,
-	  interactor: renderWindow.getInteractor(),
+	  interactor: renderWindow.getInteractor()
 	});
 	orientationWidget.setEnabled(true);
 	orientationWidget.setViewportCorner(
-	  vtkOrientationMarkerWidget.Corners.BOTTOM_RIGHT
-	);
+		vtkOrientationMarkerWidget.Corners.BOTTOM_RIGHT);
 	orientationWidget.setViewportSize(0.15);
 	orientationWidget.setMinPixelSize(100);
 	orientationWidget.setMaxPixelSize(300);
@@ -250,7 +249,6 @@ function initRubikVtk()
 
 export default
 {
-	initRubikVtk,
 	setRubikVtkColors
 };
 

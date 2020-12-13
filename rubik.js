@@ -641,10 +641,6 @@ function scramble(state)
 	let imoves = getScramble(n);
 	applyExpandedMoves(imoves, state);
 
-	//let moves0 = "R' F R2 R2 D M' B' R' D' M' E2 U M' U' E2 E2 F' F2 L2 S F F2 L' L F F F2 M' S E' E' R2 S F' S' R F R E' F2 B' R2 M' F2 S F2 M' U E F";
-	//let imoves = parseAndExpand(moves0);
-	//applyExpandedMoves(imoves, state);
-
 	let moves = render(imoves);
 	console.log("scramble = " + moves);
 	console.log("reverse scramble = " + undo(moves));
@@ -759,16 +755,8 @@ function initRubikGame()
 
 //==============================================================================
 
-//if (typeof module !== "undefined")
-//{
-//	// Export functions for jest testing script, but not in production
-//	module.exports = parse;
-//}
-
 export default
 {
-	initRubikGame,
-	processRubikCommand,
 	parse
 };
 

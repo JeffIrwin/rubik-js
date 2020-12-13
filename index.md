@@ -1,4 +1,6 @@
 
+<link rel="shortcut icon" type="image/png" href="/favicon.png">
+
 <pre><p id="commandHistoryBody"></p></pre>
 
 <!-- onsubmit=... stops the whole page from reloading on form submission -->

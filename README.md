@@ -1,5 +1,7 @@
 
+<!--
 ![](https://github.com/JeffIrwin/rubik-js/workflows/CI/badge.svg)
+-->
 
 # rubik-js
 Rubik's cube game written in JavaScript
