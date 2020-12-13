@@ -203,11 +203,11 @@ function initRubikVtk()
 		edgeColor: 'cyan',
 		resolution: 400,
 	});
-	cube.setXMinusFaceProperty({text: 'Left' });
-	cube.setYPlusFaceProperty ({text: 'Up'   });
-	cube.setYMinusFaceProperty({text: 'Down' });
-	cube.setZPlusFaceProperty ({text: 'Front'});
-	cube.setZMinusFaceProperty({text: 'Back' });
+	cube.setXMinusFaceProperty({text: 'L'});
+	cube.setYPlusFaceProperty ({text: 'U'});
+	cube.setYMinusFaceProperty({text: 'D'});
+	cube.setZPlusFaceProperty ({text: 'F'});
+	cube.setZMinusFaceProperty({text: 'B'});
 
 	renderer.resetCamera();
 
