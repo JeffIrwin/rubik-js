@@ -18,5 +18,5 @@
 
 <script src="./dist/rubik.js"></script>
 
-{{ site.github.build_revision }}
+Build revision `{{ site.github.build_revision }}`
 
