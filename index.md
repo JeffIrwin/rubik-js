@@ -1,5 +1,5 @@
 
-<link rel="shortcut icon" type="image/png" href="/favicon.png">
+<link rel="shortcut icon" type="image/png" href="favicon.png">
 
 <pre><p id="commandHistoryBody"></p></pre>
 
@@ -17,4 +17,6 @@
 <pre><p id="rubikBody"></p></pre>
 
 <script src="./dist/rubik.js"></script>
+
+{{ site.github.build_revision }}
 
