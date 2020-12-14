@@ -657,6 +657,7 @@ function unscramble(state)
 		let moves = moveHistory.pop();
 		apply(undo(moves), state);
 	}
+	// TODO:  orient?
 }
 
 function orient(state0)
@@ -757,9 +758,16 @@ function processRubikCommand()
 		moveHistory.push(command);
 	}
 
-	// TODO:  move the solution indicator somewhere else.  After clicking
-	// "Scramble", this isn't right.
-	if (solved) cbody += "Successfully solved!\n";
+	if (solved)
+	{
+		// TODO:  move the solution indicator somewhere else.  After clicking
+		// "Scramble", this isn't right.
+
+		// Clear moveHistory to only unscrambling once
+		moveHistory = [];
+
+		cbody += "Successfully solved!\n";
+	}
 
 	document.getElementById(COMMAND_BODY).innerHTML = cbody;
 
