@@ -161,21 +161,17 @@ function initRubikVtk()
 	for (let i = 0; i < X.length; i++)
 	{
 		planeSources.push(vtkPlaneSource.newInstance());
-		planeSources[i].setOrigin([X[i], Y[i], Z[i]]);
 
-		if (U[i] == 0)
-			planeSources[i].setPoint1([X[i]+D, Y[i], Z[i]]);
-		else if (U[i] == 1)
-			planeSources[i].setPoint1([X[i], Y[i]+D, Z[i]]);
-		else
-			planeSources[i].setPoint1([X[i], Y[i], Z[i]+D]);
+		let o = [X[i], Y[i], Z[i]];
+		planeSources[i].setOrigin(o);
 
-		if (V[i] == 0)
-			planeSources[i].setPoint2([X[i]+D, Y[i], Z[i]]);
-		else if (V[i] == 1)
-			planeSources[i].setPoint2([X[i], Y[i]+D, Z[i]]);
-		else
-			planeSources[i].setPoint2([X[i], Y[i], Z[i]+D]);
+		let p1 = o.slice();
+		p1[U[i]] += D;
+		planeSources[i].setPoint1(p1);
+
+		let p2 = o.slice();
+		p2[V[i]] += D;
+		planeSources[i].setPoint2(p2);
 
 		mappers.push(vtkMapper.newInstance());
 		mappers[i].setInputConnection(planeSources[i].getOutputPort());
@@ -193,7 +189,6 @@ function initRubikVtk()
 	cube.setDefaultStyle
 	({
 		text: 'R',
-		//fontStyle: 'bold',
 		fontFamily: 'Arial',
 		fontColor: 'black',
 		fontSizeScale: (res) => res / 2,
