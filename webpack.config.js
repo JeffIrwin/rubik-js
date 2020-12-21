@@ -5,8 +5,8 @@ var vtkRules = require('vtk.js/Utilities/config/dependency.js').webpack.core.rul
 // Optional if you want to load *.css and *.module.css files
 // var cssRules = require('vtk.js/Utilities/config/dependency.js').webpack.css.rules;
 
-var entry = path.join(__dirname, './rubik.js');
-const sourcePath = path.join(__dirname, './');
+var entry = path.join(__dirname, './src/rubik.js');
+const sourcePath = path.join(__dirname, './src');
 const outputPath = path.join(__dirname, './dist');
 
 module.exports = {
