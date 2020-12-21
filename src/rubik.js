@@ -15,6 +15,9 @@ const ANIMATE = true;
 let stateg;
 let commandHistory = [];
 let moveHistory = [];
+let inputHistory = [];
+let iHistory = 0;
+let inputBuffer = "";
 
 function state2string(state)
 {
@@ -632,6 +635,10 @@ function processCommand()
 
 	//console.log("stateg = " + orient(stateg).toString());
 
+	inputHistory.push(command);
+	iHistory = inputHistory.length;
+	inputBuffer = "";
+
 	commandHistory.push(command);
 	renderRubik();
 
@@ -681,6 +688,63 @@ function processUnscramble()
 	renderRubik();
 }
 
+function commandKeyDown(e)
+{
+	const upArrowKey = 38;
+	const downArrowKey = 40;
+	const enterKey = 13;
+
+	let input0 = document.forms.rubikForm.command.value;
+
+	//console.log("iHistory = " + iHistory);
+	//console.log("inputHistory.length = " + inputHistory.length);
+
+	if (e.keyCode == upArrowKey)
+	{
+		//console.log("up");
+
+		if (input0 != "")
+		{
+			if (iHistory < inputHistory.length)
+				inputHistory[iHistory] = input0;
+			else
+				inputBuffer = input0;
+		}
+
+		iHistory--;
+		if (iHistory < 0)
+			iHistory = 0;
+
+		if (iHistory < inputHistory.length)
+			document.forms.rubikForm.command.value = inputHistory[iHistory];
+
+		// TODO: place cursor at end of input field
+		//document.forms.rubikForm.command.selectionStart = document.forms.rubikForm.command.selectionEnd = document.forms.rubikForm.command.value.length;
+	}
+	else if (e.keyCode == downArrowKey)
+	{
+		//console.log("down");
+
+		//if (input0 != "")
+		//{
+			if (iHistory < inputHistory.length)
+				inputHistory[iHistory] = input0;
+		//}
+
+		iHistory++;
+		if (iHistory > inputHistory.length)
+			iHistory = inputHistory.length;
+
+		if (iHistory < inputHistory.length)
+			document.forms.rubikForm.command.value = inputHistory[iHistory];
+		else
+			document.forms.rubikForm.command.value = inputBuffer;
+	}
+	else if (e.keyCode == enterKey)
+		processCommand();
+
+}
+
 function initialize()
 {
 	console.log("starting rubik.initialize()");
@@ -693,6 +757,8 @@ function initialize()
 	processScramble();
 
 	document.forms.rubikForm.command.addEventListener("change", processCommand);
+	document.forms.rubikForm.command.addEventListener("keydown", commandKeyDown);
+
 	document.getElementById(SCRAMBLE).addEventListener("click", processScramble);
 	document.getElementById(UNSCRAMBLE).addEventListener("click", processUnscramble);
 }
@@ -701,8 +767,7 @@ function initialize()
 
 export default
 {
+	initialize,
 	parse
 };
-
-initialize();
 

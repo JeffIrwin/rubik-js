@@ -19,7 +19,7 @@
 
 <pre><p id="rubikBody"></p></pre>
 
-<script src="./dist/rubik.js"></script>
+<script src="./dist/main.js"></script>
 
 Build revision `{{ site.github.build_revision }}`
 
