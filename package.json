@@ -9,6 +9,7 @@
     "kw-web-suite": "^11.0.0"
   },
   "dependencies": {
+    "async-mutex": "^0.2.6",
     "vtk.js": "^15.3.3"
   }
 }

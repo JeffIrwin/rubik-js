@@ -1,6 +1,7 @@
 "use strict";
 
 import rubikVtk from 'rubikVtk';
+import * as rc from 'rubikConstants';
 
 // HTML IDs for text display output, button listeners, etc.
 const RUBIK_BODY = "rubikBody";
@@ -8,160 +9,35 @@ const COMMAND_BODY = "commandHistoryBody";
 const SCRAMBLE = "Scramble";
 const UNSCRAMBLE = "Unscramble";
 
-// Number of tiles along a 1D line
-const NTILESLINE = 3;
-
-// Number of tiles on a face
-const NTILESFACE = NTILESLINE ** 2;
-
-// Number of dimensions
-const NDIM = 3;
-
-// Number of faces on cube
-const NFACE = NDIM * 2;
-
-// Total number of tiles on the cube
-const NTILES = NFACE * NTILESFACE;
-
-// Number of turns in a full rotation
-const NTURNS = 4;
-
-// Face move IDs
-const
-	MOVE_R  =  0,
-	MOVE_U  =  1,
-	MOVE_L  =  2,
-	MOVE_D  =  3,
-	MOVE_F  =  4,
-	MOVE_B  =  5,
-	MOVE_M  =  6,
-	MOVE_E  =  7,
-	MOVE_S  =  8,
-	MOVE_R2 =  9,
-	MOVE_U2 = 10,
-	MOVE_L2 = 11,
-	MOVE_D2 = 12,
-	MOVE_F2 = 13,
-	MOVE_B2 = 14,
-	MOVE_X  = 15,
-	MOVE_Y  = 16,
-	MOVE_Z  = 17
-	;
-
-const
-	CHAR_R  = "R",
-	CHAR_U  = "U",
-	CHAR_L  = "L",
-	CHAR_D  = "D",
-	CHAR_F  = "F",
-	CHAR_B  = "B",
-	CHAR_M  = "M",
-	CHAR_E  = "E",
-	CHAR_S  = "S",
-	CHAR_R2 = "r",
-	CHAR_U2 = "u",
-	CHAR_L2 = "l",
-	CHAR_D2 = "d",
-	CHAR_F2 = "f",
-	CHAR_B2 = "b",
-	CHAR_X  = "x",
-	CHAR_Y  = "y",
-	CHAR_Z  = "z"
-	;
-
-const MOVE_MAP = new Map([
-	[CHAR_R , MOVE_R ],
-	[CHAR_U , MOVE_U ],
-	[CHAR_L , MOVE_L ],
-	[CHAR_D , MOVE_D ],
-	[CHAR_F , MOVE_F ],
-	[CHAR_B , MOVE_B ],
-	[CHAR_M , MOVE_M ],
-	[CHAR_E , MOVE_E ],
-	[CHAR_S , MOVE_S ],
-	[CHAR_R2, MOVE_R2],
-	[CHAR_U2, MOVE_U2],
-	[CHAR_L2, MOVE_L2],
-	[CHAR_D2, MOVE_D2],
-	[CHAR_F2, MOVE_F2],
-	[CHAR_B2, MOVE_B2],
-	[CHAR_X , MOVE_X ],
-	[CHAR_Y , MOVE_Y ],
-	[CHAR_Z , MOVE_Z ]
-	]);
-
-const MOVE_MAP_INV = new Map(Array.from(MOVE_MAP, a => a.reverse()));
-
-// Twist amount IDs.  CW 90 degrees is default, otherwise CCW 90, or half turn
-// (180 degrees).
-const
-	TURN_CCW = 1,
-	TURN_2 = 2,
-	TURN_CW = 3
-	;
-
-const
-	CHAR_CCW = "'",
-	CHAR_2 = "2",
-	CHAR_CCW_ALT0 = "’",  // iOS ’ character(s)
-	CHAR_CCW_ALT1 = String.fromCharCode(8217); 
-	;
-
-// Put the alternative character(s) first so they aren't used in the inverse map
-const TURN_MAP = new Map([
-		[CHAR_CCW_ALT0, TURN_CCW],
-		[CHAR_CCW_ALT1, TURN_CCW],
-		[CHAR_CCW     , TURN_CCW],
-		[CHAR_2       , TURN_2]
-		]);
-
-const TURN_MAP_INV = new Map(Array.from(TURN_MAP, a => a.reverse()));
-
-// Map from face-major state ordering to an ordering for flat 2D text display
-const FLAT_MAP =
-[
-	              0,  1,  2,
-	              3,  4,  5,
-	              6,  7,  8,
-
-	 9, 10, 11,  18, 19, 20,  27, 28, 29,  36, 37, 38,
-	12, 13, 14,  21, 22, 23,  30, 31, 32,  39, 40, 41,
-	15, 16, 17,  24, 25, 26,  33, 34, 35,  42, 43, 44,
-
-	             45, 46, 47,
-	             48, 49, 50,
-	             51, 52, 53
-];
-
-// Colormap
-const CMAP = "wrbogy";
+// Animate smooth rotations, or just swap colors instantly?
+const ANIMATE = true;
 
 let stateg;
 let commandHistory = [];
 let moveHistory = [];
 
-function state2string(state, cmap)
+function state2string(state)
 {
 	// Convert the cube state to a flat 2D string display, arranged like in the
-	// FLAT_MAP above
+	// FLAT_MAP
 
 	let string = "";  // "[";
-	for (let i = 0; i < NTILES; i++)
+	for (let i = 0; i < rc.NTILES; i++)
 	{
-		if (i % NTILESLINE == 0)
+		if (i % rc.NTILESLINE == 0)
 		{
-			if (i <= NTILESFACE || i >= NTILES - NTILESFACE)
+			if (i <= rc.NTILESFACE || i >= rc.NTILES - rc.NTILESFACE)
 				// Newline (up or down face)
 				string += "\n";
-			else if ((i - NTILESFACE) % (NTILESLINE * 4) == 0)
+			else if ((i - rc.NTILESFACE) % (rc.NTILESLINE * 4) == 0)
 				// Newline (left face)
 				string += "\n";
 
-			if (i == NTILESFACE || i == NTILES - NTILESFACE)
+			if (i == rc.NTILESFACE || i == rc.NTILES - rc.NTILESFACE)
 				// Double newline between faces vertically
 				string += "\n";
 
-			if (i < NTILESFACE || i >= NTILES - NTILESFACE)
+			if (i < rc.NTILESFACE || i >= rc.NTILES - rc.NTILESFACE)
 				// Leading spaces for indentation of up and down faces
 				string += "        ";
 			else
@@ -169,8 +45,8 @@ function state2string(state, cmap)
 				string += " ";
 		}
 
-		//string += state[FLAT_MAP[i]] + " ";  // numerical representation
-		string += cmap[state[FLAT_MAP[i]]] + " ";  // color character representation
+		//string += state[rc.FLAT_MAP[i]] + " ";  // numerical representation
+		string += rc.CMAP[state[rc.FLAT_MAP[i]]] + " ";  // color character representation
 
 	}
 	//string += "]";
@@ -186,9 +62,9 @@ function initState()
 
 	let state = [];
 	let j = -1;
-	for (let i = 0; i < NTILES; i++)
+	for (let i = 0; i < rc.NTILES; i++)
 	{
-		if (i % NTILESFACE == 0) j++;
+		if (i % rc.NTILESFACE == 0) j++;
 		state[i] = j;
 	}
 	return state;
@@ -199,7 +75,7 @@ function parse(moves)
 	// Parse moves from a string and return the moves encoded as an integer
 	// array representing faces and number of turns
 
-	console.log("starting parse()");
+	//console.log("starting parse()");
 
 	let imoves = [];
 	let i = 0;
@@ -209,7 +85,7 @@ function parse(moves)
 		let c = moves[i];
 		//console.log("c = " + c);
 
-		let moveParsed = MOVE_MAP.has(c);
+		let moveParsed = rc.MOVE_MAP.has(c);
 		i++;
 		if (!moveParsed)
 		{
@@ -223,23 +99,23 @@ function parse(moves)
 				return [];
 			}
 		}
-		imoves.push(MOVE_MAP.get(c));
+		imoves.push(rc.MOVE_MAP.get(c));
 
 		// Parse the number (including direction) of turns as a multiple of 90
 		// degrees CCW positive.  May need to pad end of string with a space.
 		c = i < moves.length ? moves[i] : " ";
 		//console.log("c = " + c);
 
-		let turnParsed = TURN_MAP.has(c);
+		let turnParsed = rc.TURN_MAP.has(c);
 		i++;
 		if (turnParsed)
 		{
-			imoves.push(TURN_MAP.get(c));
+			imoves.push(rc.TURN_MAP.get(c));
 		}
 		else
 		{
 			if (c.trim() === "")
-				imoves.push(TURN_CW);
+				imoves.push(rc.TURN_CW);
 			else
 			{
 				throw ' '.repeat(i-1)
@@ -249,7 +125,7 @@ function parse(moves)
 			}
 		}
 	}
-	console.log("imoves = " + imoves);
+	//console.log("imoves = " + imoves);
 
 	return imoves;
 }
@@ -258,16 +134,16 @@ function render(imoves)
 {
 	// Inverse of parse(): convert encoded moves to a string
 
-	console.log("starting render()");
+	//console.log("starting render()");
 
 	let moves = "";
 	for (let i = 0; i < imoves.length; i += 2)
 	{
-		moves += MOVE_MAP_INV.get(imoves[i]);
+		moves += rc.MOVE_MAP_INV.get(imoves[i]);
 
-		let turnParsed = TURN_MAP_INV.has(imoves[i+1]);
+		let turnParsed = rc.TURN_MAP_INV.has(imoves[i+1]);
 		if (turnParsed)
-			moves += TURN_MAP_INV.get(imoves[i+1]);
+			moves += rc.TURN_MAP_INV.get(imoves[i+1]);
 
 		moves += " ";
 	}
@@ -281,7 +157,7 @@ function expandMoves(imoves0)
 	// moves.  This increases the size of imoves, but the result can be applied
 	// with applyExpandedMoves(), which cannot handle multi-layer moves.
 
-	console.log("starting expandMoves()");
+	//console.log("starting expandMoves()");
 
 	let imoves = [];
 	for (let i0 = 0; i0 < imoves0.length; i0 += 2)
@@ -290,74 +166,74 @@ function expandMoves(imoves0)
 		let face = imoves0[i0];
 		let turns = imoves0[i0+1];
 
-		if (face == MOVE_R2)
+		if (face == rc.MOVE_R2)
 		{
-			imoves.push(MOVE_R);
+			imoves.push(rc.MOVE_R);
 			imoves.push(turns);
-			imoves.push(MOVE_M);
-			imoves.push(NTURNS - turns);
+			imoves.push(rc.MOVE_M);
+			imoves.push(rc.NTURNS - turns);
 		}
-		else if (face == MOVE_U2)
+		else if (face == rc.MOVE_U2)
 		{
-			imoves.push(MOVE_U);
+			imoves.push(rc.MOVE_U);
 			imoves.push(turns);
-			imoves.push(MOVE_E);
-			imoves.push(NTURNS - turns);
+			imoves.push(rc.MOVE_E);
+			imoves.push(rc.NTURNS - turns);
 		}
-		else if (face == MOVE_L2)
+		else if (face == rc.MOVE_L2)
 		{
-			imoves.push(MOVE_L);
+			imoves.push(rc.MOVE_L);
 			imoves.push(turns);
-			imoves.push(MOVE_M);
-			imoves.push(turns);
-		}
-		else if (face == MOVE_D2)
-		{
-			imoves.push(MOVE_D);
-			imoves.push(turns);
-			imoves.push(MOVE_E);
+			imoves.push(rc.MOVE_M);
 			imoves.push(turns);
 		}
-		else if (face == MOVE_F2)
+		else if (face == rc.MOVE_D2)
 		{
-			imoves.push(MOVE_F);
+			imoves.push(rc.MOVE_D);
 			imoves.push(turns);
-			imoves.push(MOVE_S);  // weird convention but ok
+			imoves.push(rc.MOVE_E);
 			imoves.push(turns);
 		}
-		else if (face == MOVE_B2)
+		else if (face == rc.MOVE_F2)
 		{
-			imoves.push(MOVE_B);
+			imoves.push(rc.MOVE_F);
 			imoves.push(turns);
-			imoves.push(MOVE_S);
-			imoves.push(NTURNS - turns);
+			imoves.push(rc.MOVE_S);  // weird convention but ok
+			imoves.push(turns);
 		}
-		else if (face == MOVE_X)
+		else if (face == rc.MOVE_B2)
 		{
-			imoves.push(MOVE_R);
+			imoves.push(rc.MOVE_B);
 			imoves.push(turns);
-			imoves.push(MOVE_M);
-			imoves.push(NTURNS - turns);
-			imoves.push(MOVE_L);
-			imoves.push(NTURNS - turns);
+			imoves.push(rc.MOVE_S);
+			imoves.push(rc.NTURNS - turns);
 		}
-		else if (face == MOVE_Y)
+		else if (face == rc.MOVE_X)
 		{
-			imoves.push(MOVE_U);
+			imoves.push(rc.MOVE_R);
 			imoves.push(turns);
-			imoves.push(MOVE_E);
-			imoves.push(NTURNS - turns);
-			imoves.push(MOVE_D);
-			imoves.push(NTURNS - turns);
+			imoves.push(rc.MOVE_M);
+			imoves.push(rc.NTURNS - turns);
+			imoves.push(rc.MOVE_L);
+			imoves.push(rc.NTURNS - turns);
 		}
-		else if (face == MOVE_Z)
+		else if (face == rc.MOVE_Y)
 		{
-			imoves.push(MOVE_F);
+			imoves.push(rc.MOVE_U);
 			imoves.push(turns);
-			imoves.push(MOVE_S);
+			imoves.push(rc.MOVE_E);
+			imoves.push(rc.NTURNS - turns);
+			imoves.push(rc.MOVE_D);
+			imoves.push(rc.NTURNS - turns);
+		}
+		else if (face == rc.MOVE_Z)
+		{
+			imoves.push(rc.MOVE_F);
+			imoves.push(turns);
+			imoves.push(rc.MOVE_S);
 			imoves.push(turns);  // weird convention ibid
-			imoves.push(MOVE_B);
-			imoves.push(NTURNS - turns);
+			imoves.push(rc.MOVE_B);
+			imoves.push(rc.NTURNS - turns);
 		}
 		else
 		{
@@ -367,7 +243,7 @@ function expandMoves(imoves0)
 			imoves.push(turns);
 		}
 	}
-	console.log("imoves = " + imoves);
+	//console.log("imoves = " + imoves);
 
 	return imoves;
 }
@@ -546,23 +422,23 @@ function applyExpandedMoves(imoves, state)
 
 		for (let j = 0; j < turns; j++)
 		{
-			if      (face == MOVE_R)
+			if      (face == rc.MOVE_R)
 				turnR(state);
-			else if (face == MOVE_U)
+			else if (face == rc.MOVE_U)
 				turnU(state);
-			else if (face == MOVE_L)
+			else if (face == rc.MOVE_L)
 				turnL(state);
-			else if (face == MOVE_D)
+			else if (face == rc.MOVE_D)
 				turnD(state);
-			else if (face == MOVE_F)
+			else if (face == rc.MOVE_F)
 				turnF(state);
-			else if (face == MOVE_B)
+			else if (face == rc.MOVE_B)
 				turnB(state);
-			else if (face == MOVE_M)
+			else if (face == rc.MOVE_M)
 				turnM(state);
-			else if (face == MOVE_E)
+			else if (face == rc.MOVE_E)
 				turnE(state);
-			else if (face == MOVE_S)
+			else if (face == rc.MOVE_S)
 				turnS(state);
 			else
 			{
@@ -572,18 +448,16 @@ function applyExpandedMoves(imoves, state)
 	}
 }
 
-function parseAndExpand(moves)
-{
-	// Parse moves from a string and return expanded single-layer moves
-	let imoves0 = parse(moves);
-	let imoves = expandMoves(imoves0);
-	return imoves;
-}
-
-function apply(moves, state)
+function apply(moves, state, animate)
 {
 	// Apply a string of moves to the cube state
-	let imoves = parseAndExpand(moves);
+
+	let imoves0 = parse(moves);
+
+	if (ANIMATE && animate)
+		rubikVtk.animate(imoves0);
+
+	let imoves = expandMoves(imoves0);
 	applyExpandedMoves(imoves, state);
 }
 
@@ -597,11 +471,17 @@ function getScramble(n)
 	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 
 	let imoves = [];
-	for (let i = 0; i < n; i++)
+	for (let i = 0; i < 2 * n; i += 2)
 	{
 		// One of 6 basic single outer layer moves.  Could use middle-layer
 		// moves to (up to 9).
-		imoves.push(Math.floor(Math.random() * 6));
+		let face = Math.floor(Math.random() * 6);
+
+		// Don't push if same face as previous.  Don't need to check i>1 in js.
+		while (face == imoves[i-2])
+			face = Math.floor(Math.random() * 6);
+
+		imoves.push(face);
 
 		// Turn by 90, 180, or 270 degrees
 		imoves.push(Math.floor(Math.random() * 3) + 1);
@@ -623,7 +503,7 @@ function iundo(imoves)
 		imovesr.push(imoves[i]);
 
 		// Opposite twist
-		imovesr.push(NTURNS - imoves[i+1]);
+		imovesr.push(rc.NTURNS - imoves[i+1]);
 	}
 	return imovesr;
 }
@@ -638,11 +518,15 @@ function scramble(state)
 {
 	// Randomly scramble the cube state
 
-	let n = 50;  // number of scramble moves
-	let imoves = getScramble(n);
-	applyExpandedMoves(imoves, state);
+	let n = 25;  // number of scramble moves
 
-	let moves = render(imoves);
+	//let imoves = getScramble(n);
+	//applyExpandedMoves(imoves, state);
+	//let moves = render(imoves);
+
+	let moves = render(getScramble(n));
+	apply(moves, state, true);
+
 	moveHistory.push(moves);
 
 	console.log("scramble = " + moves);
@@ -655,9 +539,8 @@ function unscramble(state)
 	for (let i = moveHistory.length - 1; i >= 0; i--)
 	{
 		let moves = moveHistory.pop();
-		apply(undo(moves), state);
+		apply(undo(moves), state, true);
 	}
-	// TODO:  orient?
 }
 
 function orient(state0)
@@ -677,27 +560,27 @@ function orient(state0)
 	{
 		let moves = "";
 		if (state[13] == upColor)
-			moves = CHAR_Z;
+			moves = rc.CHAR_Z;
 		else if (state[22] == upColor)
-			moves = CHAR_X;
+			moves = rc.CHAR_X;
 		else if (state[31] == upColor)
-			moves = CHAR_Z + CHAR_CCW;
+			moves = rc.CHAR_Z + rc.CHAR_CCW;
 		else if (state[40] == upColor)
-			moves = CHAR_X + CHAR_CCW;
+			moves = rc.CHAR_X + rc.CHAR_CCW;
 		else if (state[49] == upColor)
-			moves = CHAR_Z + CHAR_2;
+			moves = rc.CHAR_Z + rc.CHAR_2;
 		else
 		{
 			// TODO: catch
 		}
-		apply(moves, state);
+		apply(moves, state, false);
 	}
 
 	// Orient front face
 	while (state[22] != frontColor)
 	{
 		// TODO:  catch infinite loop
-		apply(CHAR_Y, state);
+		apply(rc.CHAR_Y, state, false);
 	}
 
 	return state;
@@ -706,31 +589,42 @@ function orient(state0)
 function renderRubik()
 {
 	// Render the cube in the VTK render window and as text
-	rubikVtk.setRubikVtkColors(stateg, CMAP, FLAT_MAP);
-	document.getElementById(RUBIK_BODY).innerHTML = state2string(stateg, CMAP);
+
+	if (!ANIMATE)
+		rubikVtk.setColors(stateg)
+
+	document.getElementById(RUBIK_BODY).innerHTML = state2string(stateg);
 }
 
-function processRubikCommand()
+function processCommand()
 {
-	console.log("starting processRubikCommand()");
+	//console.log("starting processCommand()");
 
 	let command = document.forms.rubikForm.command.value;
 
-	console.log('command = "' + command + '"');
+	if (command == "")
+	{
+		// Do nothing
+		return;
+	}
 
+	// Reset text input.
+	document.forms.rubikForm.command.value = "";
+
+	//console.log('command = "' + command + '"');
 	//console.log("stateg = " + stateg);
 
 	let caught = false;
 	let errstr = "";
 	try
 	{
-		apply(command, stateg);
+		apply(command, stateg, true);
 	}
 	catch (e)
 	{
 		caught = true;
 		errstr = e;
-		console.log("caught: " + errstr);
+		//console.log("caught: " + errstr);
 	}
 
 	// toString() is a hack to compare array values instead of pointers
@@ -770,33 +664,35 @@ function processRubikCommand()
 	}
 
 	document.getElementById(COMMAND_BODY).innerHTML = cbody;
-
-	// Reset text input
-	document.forms.rubikForm.command.value = "";
+	//console.log("ending processCommand()");
 }
 
 function processScramble()
 {
-	console.log("starting processScramble()");
+	//console.log("starting processScramble()");
 	scramble(stateg);
 	renderRubik();
 }
 
 function processUnscramble()
 {
-	console.log("starting processUnscramble()");
+	//console.log("starting processUnscramble()");
 	unscramble(stateg);
 	renderRubik();
 }
 
-function initRubikGame()
+function initialize()
 {
-	console.log("starting initRubikGame()");
+	console.log("starting rubik.initialize()");
 
 	stateg = initState();
+
+	rubikVtk.initialize();
+	rubikVtk.setColors(stateg);
+
 	processScramble();
 
-	document.forms.rubikForm.command.addEventListener("change", processRubikCommand)
+	document.forms.rubikForm.command.addEventListener("change", processCommand);
 	document.getElementById(SCRAMBLE).addEventListener("click", processScramble);
 	document.getElementById(UNSCRAMBLE).addEventListener("click", processUnscramble);
 }
@@ -808,5 +704,5 @@ export default
 	parse
 };
 
-initRubikGame();
+initialize();
 
