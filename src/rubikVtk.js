@@ -17,7 +17,7 @@ import vtkAnnotatedCubeActor from 'vtk.js/Sources/Rendering/Core/AnnotatedCubeAc
 // async-mutex
 import {Mutex, Semaphore, withTimeout} from 'async-mutex';
 
-const NFRAMES = 6;  // Number of frames for a single (quarter or half) turn animation
+let nframes = 6;  // Number of frames for a single (quarter or half) turn animation
 
 const RADQUART = Math.PI / 2.0;  // quarter turn (radians), equivalent to 90 degrees
 //const DEGQUART = 90.0;
@@ -182,7 +182,7 @@ function sleep(ms)
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function turnTiles(minBound, maxBound, u, stheta, ctheta)
+async function turnTiles(minBound, maxBound, u, angle)
 {
 	const release = await turnMutex.acquire();
 	try
@@ -202,10 +202,14 @@ async function turnTiles(minBound, maxBound, u, stheta, ctheta)
 		}
 		//console.log("turnTiles, itiles = " + itiles);
 
+		let dtheta = angle / nframes;  // incremental turn per frame
+		let stheta = Math.sin(dtheta);
+		let ctheta = Math.cos(dtheta);
+
 		// Start timer for benchmarking.
 		let t0 = new Date;
 
-		for (let itime = 1; itime <= NFRAMES; itime++)
+		for (let itime = 1; itime <= nframes; itime++)
 		{
 			//console.log("itime = " + itime);
 			for (let i = 0; i < itiles.length; i++)
@@ -248,8 +252,16 @@ async function turnTiles(minBound, maxBound, u, stheta, ctheta)
 		}
 
 		let dt = new Date - t0;
+
+		// Target time for a turn animation in ms
+		const TURN_TIME = 357.0;
+
+		// Set frame rate based on device performance, down to a certain minimum number of frames
+		nframes = Math.max(4, Math.round(nframes * TURN_TIME / dt));
+
 		//console.log("dt = " + dt + " ms");
-		//console.log("FPS = " + (1000.0 * NFRAMES / dt));
+		//console.log("FPS = " + (1000.0 * nframes / dt));
+		//console.log("new nframes = " + nframes);
 
 	}
 	finally
@@ -263,170 +275,114 @@ function turnR(angle)
 	// TODO:  bundle these (and bounds) into rotation and bounds structs
 	//let r0 = [XC, YC, ZC];
 	let u = [1.0, 0.0, 0.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame (radians)
 	//let axis = 1;
 
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-
-	turnTiles([X2, -Infinity, -Infinity], [Infinity, Infinity, Infinity], u, stheta, ctheta);
+	turnTiles([X2, -Infinity, -Infinity], [Infinity, Infinity, Infinity], u, angle);
 }
 
 function turnU(angle)
 {
 	//let r0 = [XC, YC, ZC];
 	let u = [0.0, 1.0, 0.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
 	//let axis = 2;
 
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-
-	turnTiles([-Infinity, Y2, -Infinity], [Infinity, Infinity, Infinity], u, stheta, ctheta);
+	turnTiles([-Infinity, Y2, -Infinity], [Infinity, Infinity, Infinity], u, angle);
 }
 
 function turnL(angle)
 {
 	let u = [-1.0, 0.0, 0.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([-Infinity, -Infinity, -Infinity], [X1, Infinity, Infinity], u, stheta, ctheta);
+	turnTiles([-Infinity, -Infinity, -Infinity], [X1, Infinity, Infinity], u, angle);
 }
 
 function turnD(angle)
 {
 	let u = [0.0, -1.0, 0.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([-Infinity, -Infinity, -Infinity], [Infinity, Y1, Infinity], u, stheta, ctheta);
+	turnTiles([-Infinity, -Infinity, -Infinity], [Infinity, Y1, Infinity], u, angle);
 }
 
 function turnF(angle)
 {
 	let u = [0.0, 0.0, 1.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([-Infinity, -Infinity, Z2], [Infinity, Infinity, Infinity], u, stheta, ctheta);
+	turnTiles([-Infinity, -Infinity, Z2], [Infinity, Infinity, Infinity], u, angle);
 }
 
 function turnB(angle)
 {
 	let u = [0.0, 0.0, -1.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([-Infinity, -Infinity, -Infinity], [Infinity, Infinity, Z1], u, stheta, ctheta);
+	turnTiles([-Infinity, -Infinity, -Infinity], [Infinity, Infinity, Z1], u, angle);
 }
 
 function turnM(angle)
 {
 	let u = [-1.0, 0.0, 0.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([X1, -Infinity, -Infinity], [X2, Infinity, Infinity], u, stheta, ctheta);
+	turnTiles([X1, -Infinity, -Infinity], [X2, Infinity, Infinity], u, angle);
 }
 
 function turnE(angle)
 {
 	let u = [0.0, -1.0, 0.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([-Infinity, Y1, -Infinity], [Infinity, Y2, Infinity], u, stheta, ctheta);
+	turnTiles([-Infinity, Y1, -Infinity], [Infinity, Y2, Infinity], u, angle);
 }
 
 function turnS(angle)
 {
 	let u = [0.0, 0.0, 1.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([-Infinity, -Infinity, Z1], [Infinity, Infinity, Z2], u, stheta, ctheta);
+	turnTiles([-Infinity, -Infinity, Z1], [Infinity, Infinity, Z2], u, angle);
 }
 
 function turnR2(angle)
 {
 	let u = [1.0, 0.0, 0.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame (radians)
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([X1, -Infinity, -Infinity], [Infinity, Infinity, Infinity], u, stheta, ctheta);
+	turnTiles([X1, -Infinity, -Infinity], [Infinity, Infinity, Infinity], u, angle);
 }
 
 function turnU2(angle)
 {
 	let u = [0.0, 1.0, 0.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([-Infinity, Y1, -Infinity], [Infinity, Infinity, Infinity], u, stheta, ctheta);
+	turnTiles([-Infinity, Y1, -Infinity], [Infinity, Infinity, Infinity], u, angle);
 }
 
 function turnL2(angle)
 {
 	let u = [-1.0, 0.0, 0.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([-Infinity, -Infinity, -Infinity], [X2, Infinity, Infinity], u, stheta, ctheta);
+	turnTiles([-Infinity, -Infinity, -Infinity], [X2, Infinity, Infinity], u, angle);
 }
 
 function turnD2(angle)
 {
 	let u = [0.0, -1.0, 0.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([-Infinity, -Infinity, -Infinity], [Infinity, Y2, Infinity], u, stheta, ctheta);
+	turnTiles([-Infinity, -Infinity, -Infinity], [Infinity, Y2, Infinity], u, angle);
 }
 
 function turnF2(angle)
 {
 	let u = [0.0, 0.0, 1.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([-Infinity, -Infinity, Z1], [Infinity, Infinity, Infinity], u, stheta, ctheta);
+	turnTiles([-Infinity, -Infinity, Z1], [Infinity, Infinity, Infinity], u, angle);
 }
 
 function turnB2(angle)
 {
 	let u = [0.0, 0.0, -1.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([-Infinity, -Infinity, -Infinity], [Infinity, Infinity, Z2], u, stheta, ctheta);
+	turnTiles([-Infinity, -Infinity, -Infinity], [Infinity, Infinity, Z2], u, angle);
 }
 
 function turnX(angle)
 {
 	let u = [1.0, 0.0, 0.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame (radians)
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([-Infinity, -Infinity, -Infinity], [Infinity, Infinity, Infinity], u, stheta, ctheta);
+	turnTiles([-Infinity, -Infinity, -Infinity], [Infinity, Infinity, Infinity], u, angle);
 }
 
 function turnY(angle)
 {
 	let u = [0.0, 1.0, 0.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([-Infinity, -Infinity, -Infinity], [Infinity, Infinity, Infinity], u, stheta, ctheta);
+	turnTiles([-Infinity, -Infinity, -Infinity], [Infinity, Infinity, Infinity], u, angle);
 }
 
 function turnZ(angle)
 {
 	let u = [0.0, 0.0, 1.0];
-	let dtheta = angle / NFRAMES;  // incremental turn per frame
-	let stheta = Math.sin(dtheta);
-	let ctheta = Math.cos(dtheta);
-	turnTiles([-Infinity, -Infinity, -Infinity], [Infinity, Infinity, Infinity], u, stheta, ctheta);
+	turnTiles([-Infinity, -Infinity, -Infinity], [Infinity, Infinity, Infinity], u, angle);
 }
 
 function animate(imoves)
