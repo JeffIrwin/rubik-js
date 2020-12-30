@@ -11,8 +11,6 @@ import vtkRenderWindow from 'vtk.js/Sources/Rendering/Core/RenderWindow';
 import vtkRenderWindowInteractor from 'vtk.js/Sources/Rendering/Core/RenderWindowInteractor';
 import vtkRenderer from 'vtk.js/Sources/Rendering/Core/Renderer';
 import vtkInteractorStyleTrackballCamera from 'vtk.js/Sources/Interaction/Style/InteractorStyleTrackballCamera';
-import vtkOrientationMarkerWidget from 'vtk.js/Sources/Interaction/Widgets/OrientationMarkerWidget';
-import vtkAnnotatedCubeActor from 'vtk.js/Sources/Rendering/Core/AnnotatedCubeActor';
 
 // async-mutex
 import {Mutex, Semaphore, withTimeout} from 'async-mutex';
@@ -483,26 +481,6 @@ function initialize()
 		renderer.addActor(actors[i]);
 	}
 
-	// setup orientation widget
-	const cube = vtkAnnotatedCubeActor.newInstance();
-	cube.setDefaultStyle
-	({
-		text: 'R',
-		fontFamily: 'Arial',
-		fontColor: 'black',
-		fontSizeScale: (res) => res / 2,
-		faceColor: '#eeeeee',
-		faceRotation: 0,
-		edgeThickness: 0.1,
-		edgeColor: 'cyan',
-		resolution: 400
-	});
-	cube.setXMinusFaceProperty({text: 'L'});
-	cube.setYPlusFaceProperty ({text: 'U'});
-	cube.setYMinusFaceProperty({text: 'D'});
-	cube.setZPlusFaceProperty ({text: 'F'});
-	cube.setZMinusFaceProperty({text: 'B'});
-
 	// Set trimetric camera position (isometric would be [1,1,1])
 	const camera = renderer.getActiveCamera();
 	camera.setPosition(2, 3, 4);
@@ -530,18 +508,6 @@ function initialize()
 
 	// Setup interactor style to use
 	interactor.setInteractorStyle(vtkInteractorStyleTrackballCamera.newInstance());
-
-	// create orientation widget
-	const orientationWidget = vtkOrientationMarkerWidget.newInstance({
-	  actor: cube,
-	  interactor: renderWindow.getInteractor()
-	});
-	orientationWidget.setEnabled(true);
-	orientationWidget.setViewportCorner(
-		vtkOrientationMarkerWidget.Corners.BOTTOM_RIGHT);
-	orientationWidget.setViewportSize(0.15);
-	orientationWidget.setMinPixelSize(100);
-	orientationWidget.setMaxPixelSize(300);
 
 }
 
