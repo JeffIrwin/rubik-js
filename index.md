@@ -1,5 +1,5 @@
 
-<link rel="shortcut icon" type="image/png" href="favicon.png">
+<link rel="shortcut icon" type="image/png" href="favicon.png?v=2">
 
 <pre><p id="commandHistoryBody"></p></pre>
 
