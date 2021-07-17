@@ -497,7 +497,9 @@ function initialize()
 {
 	console.log("starting rubikVtk.initialize()");
 
-	const renderer = vtkRenderer.newInstance({background: [0.08, 0.48, 0.46]});
+	// Set transparent background so HTML div gradient background shows
+	const renderer = vtkRenderer.newInstance({background: [0, 0, 0, 0]});
+
 	renderWindow.addRenderer(renderer);
 
 	let mappers = [];

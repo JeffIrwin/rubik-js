@@ -17,7 +17,7 @@
 <input type="button" id="Scramble"   value="Scramble">
 <input type="button" id="Unscramble" value="Unscramble">
 
-<pre><p id="rubikBody"></p></pre>
+<pre><p id="rubikBody" style="background: linear-gradient(#155799, #159957);"></p></pre>
 
 <script src="./dist/main.js"></script>
 
