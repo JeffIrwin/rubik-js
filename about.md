@@ -1,4 +1,6 @@
 
+<link rel="shortcut icon" type="image/png" href="favicon.png">
+
 # Help
 
 ## Command help

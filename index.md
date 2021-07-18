@@ -12,7 +12,7 @@
 	</p>
 </form>
 
-<div id="rubikDiv" style="background: linear-gradient(#155799, #159957);"></div>
+<div id="rubikDiv" style="background: linear-gradient(120deg, #155799, #159957);"></div>
 
 <input type="button" id="Scramble"   value="Scramble">
 <input type="button" id="Unscramble" value="Unscramble">
